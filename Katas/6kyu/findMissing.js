@@ -50,6 +50,6 @@ const findMissing = (sequence) => {
     return missing;
 };
 
-let arr1 = [1, 3, 5, 9, 11]; // 7
+// let arr1 = [1, 3, 5, 9, 11]; // 7
 
-console.log(findMissing(arr1))
+// console.log(findMissing(arr1))
