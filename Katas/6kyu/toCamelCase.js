@@ -21,5 +21,5 @@ const toCamelCase = (str, finalArray = []) => {
     return toCamelCase(splitString.join(''), finalArray);
 };
 
-console.log(toCamelCase("the-stealth-warrior"));
-console.log(toCamelCase("The_Stealth_Warrior"));
+// console.log(toCamelCase("the-stealth-warrior"));
+// console.log(toCamelCase("The_Stealth_Warrior"));
