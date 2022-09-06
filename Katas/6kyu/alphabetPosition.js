@@ -13,9 +13,8 @@
 const alphabetPosition = (str, finalArray = []) => {
     if (str.length === 0) return finalArray.join(' ');
 
-    let splitString = str
-                        .toLowerCase()
-                        .split('');
+    let splitString = str.toLowerCase()
+                         .split('');
     let currentLetter = splitString.shift();
     let asciiValue = currentLetter.charCodeAt();
 
