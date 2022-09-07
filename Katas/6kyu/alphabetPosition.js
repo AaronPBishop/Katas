@@ -22,5 +22,3 @@ const alphabetPosition = (str, finalArray = []) => {
 
     return alphabetPosition(splitString.join(''), finalArray);
 };
-
-console.log(alphabetPosition("d"))

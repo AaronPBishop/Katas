@@ -31,15 +31,3 @@ const checkExam = (array1, array2, score = 0) => {
 
     return checkExam(array1, array2, score);
 };
-
-// const exam1 = ["a", "a", "b", "b"] // → 6
-// const exam2 = ["a", "a", "c", "b"] // → 7
-// const exam3 = ["a", "a", "b", "c"] // → 16
-// const exam4 = ["b", "c", "b", "a"] // → 0
-
-// const answers1 = ["a", "c", "b", "d"];
-// const answers2 = ["a", "a", "b",  ""];
-// const answers3 = ["a", "a", "b", "c"];
-// const answers4 = ["",  "a", "a", "c"];
-
-// console.log(checkExam(exam1, answers1));

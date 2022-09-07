@@ -10,6 +10,22 @@
 
 // Assertion messages may be unclear about what they display in some languages. If you read "...It Should encode XXX", the "XXX" is the expected result, not the input!
 
-const duplicateEncode = () => {
+const duplicateEncode = (word) => {
+    let encoded = '';
+    const tracker = {};
+    const splitWord = word.toLowerCase().split('');
 
+    splitWord.forEach(letter => {
+        if (tracker[letter] !== undefined) tracker[letter]++;
+        if (tracker[letter] === undefined) tracker[letter] = 1;
+    });
+
+    splitWord.forEach(letter => {
+        if (tracker[letter] > 1) encoded += ')';
+        else encoded += '(';
+    });
+    
+    return encoded;
 };
+
+console.log(duplicateEncode('recede')) // => '()()()'

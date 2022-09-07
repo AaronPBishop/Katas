@@ -39,8 +39,3 @@ const largestPairSum = (arr, count = 2, sum = 0) => {
 
     return largestPairSum(arr, count - 1, sum += largestVal);
 };
-
-// const arr1 = [10, 14, 2, 23, 19]; // 42
-// const arr2 = [99, 2, 2, 23, 19];  // 122
-
-// console.log(largestPairSum(arr2));

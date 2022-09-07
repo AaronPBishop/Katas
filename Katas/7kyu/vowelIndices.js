@@ -44,11 +44,3 @@ const vowelIndices = (word, index = 1, finalArray = []) => {
 
     return vowelIndices(splitWord.join(''), index + 1, finalArray);
 };
-
-
-// let string1 = 'Mmmm'    // []
-// let string2 = 'Super'   // [2,4]
-// let string3 = 'Apple'   // [1,5]
-// let string4 = 'YoMama'  // [1,2,4,6]
-
-// console.log(vowelIndices(string3))

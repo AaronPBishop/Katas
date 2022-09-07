@@ -24,7 +24,3 @@ const dataReverse = (data, reversedData = []) => {
 
     return dataReverse(data, reversedData);
 };
-
-// let dataSet = [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,0,1,0,1,0];
-
-// console.log(dataReverse(dataSet))

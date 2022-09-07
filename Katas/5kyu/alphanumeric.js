@@ -17,8 +17,3 @@ const alphanumeric = (string, i = 0) => {
 
     return alphanumeric(splitString.join(''), i += 1);
 };
-
-console.log(alphanumeric("Mazinkaiser")); // true
-console.log(alphanumeric("hello world_")); // false
-console.log(alphanumeric("PassW0rd")); // true
-console.log(alphanumeric("     ")); // false
