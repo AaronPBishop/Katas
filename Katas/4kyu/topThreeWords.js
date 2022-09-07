@@ -29,8 +29,13 @@ const searchObj = (obj, finalArray = []) => {
     let keys = Object.keys(obj);
     let length = keys.length;
 
+    if (length === 1) {
+      finalArray.push(keys[0]);
+      return finalArray;
+    };
+  
     if (length <= 3 && finalArray.length === length) return finalArray;
-    if (length >= 3 && finalArray.length === length) return finalArray;
+    if (length > 3 && finalArray.length === 3) return finalArray;
 
     let values = Object.values(obj);
     let highestVal = Math.max(...values);
@@ -38,37 +43,32 @@ const searchObj = (obj, finalArray = []) => {
     for (let key in obj) {
         let val = obj[key];
 
-        if (val === highestVal) {
+        if (val === highestVal && finalArray.length < length) {
             finalArray.push(key);
             obj[key] = null;
             break;
         };
     };
 
-    return searchObj(obj, length, finalArray);
+    return searchObj(obj, finalArray);
 };
 
-const topThreeWords = (text, wordObj = {}, i = 0) => {
-    if (text.length === 0) {
-        return searchObj(wordObj);
-    };
+const topThreeWords = (text, wordObj = {}) => {
+    if (text.length === 0) return searchObj(wordObj);
 
     let validWord = '';
-    const words = text.split(' ').filter(word => word !== '' && word !== ' ');
-
+    const words = text.split(' ').filter(word => word !== '');
     const currWord = words.shift().toLowerCase();
     const letters = currWord.split('');
 
     while (letters.length > 0) {
         const currLetter = letters.shift();
 
-        if (currLetter.match(/[A-Za-z']/)) validWord += currLetter;
+        if (currLetter.match(/[a-z']/)) validWord += currLetter;
     };
 
-    if (wordObj[validWord] !== undefined) wordObj[validWord]++;
-    if (wordObj[validWord] === undefined) wordObj[validWord] = 1;
+    if (validWord !== '' && validWord.match(/[a-z]/) && wordObj[validWord] !== undefined) wordObj[validWord]++;
+    if (validWord !== '' && validWord.match(/[a-z]/) && wordObj[validWord] === undefined) wordObj[validWord] = 1;
 
-    return topThreeWords(words.join(' '), wordObj, i += 1)
+    return topThreeWords(words.join(' '), wordObj)
 };
-
-console.log(topThreeWords("  //wont won't won't"));
