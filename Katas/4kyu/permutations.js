@@ -13,32 +13,22 @@
 
 const checkUnique = (arr) => {
     const visited = new Set();
-    arr.forEach(str => {
-        if (!visited.has(str)) visited.add(str);
-    });
+    arr.forEach(str => {if (!visited.has(str)) visited.add(str)});
 
     if (Array.from(visited).length === arr.length) return true;
     return false;
 };
 
-const permutations = (string, finalArray = []) => {
-    if (string.length <= 2 && finalArray.length === string.length && !checkUnique(finalArray)) {
-        finalArray = [];
-        return permutations(string, finalArray)
+const permutations = (string, finalArray = [], i = 0) => {
+    if (string.length === 2) {
+        if (string.split('')[0] === string.split('')[1]) {
+            finalArray.push(string);
+            return finalArray;
+        };
     };
+
 	if (string.length <= 2 && finalArray.length === string.length && checkUnique(finalArray)) return finalArray;
-
-    if (string.length === 3 && finalArray.length === (string.length * 2) && !checkUnique(finalArray)) {
-        finalArray = [];
-        return permutations(string, finalArray)
-    };
-	if (string.length === 3 && finalArray.length === (string.length * 2) && checkUnique(finalArray)) return finalArray;
-
-    if (string.length === 4 && finalArray.length === (string.length * 6) && !checkUnique(finalArray)) {
-        finalArray = [];
-        return permutations(string, finalArray)
-    };
-	if (string.length === 4 && finalArray.length === (string.length * 6) && checkUnique(finalArray)) return finalArray;
+    if (i === 5000) return Array.from(new Set(finalArray));
 
     const splitString = string.split('');
 
@@ -52,7 +42,7 @@ const permutations = (string, finalArray = []) => {
 
     finalArray.push(splitString.join(''));
 
-    return permutations(string, finalArray)
+    return permutations(string, finalArray, i += 1);
 };
 
-console.log(permutations('abcd'))
+console.log(permutations('abcd'));
