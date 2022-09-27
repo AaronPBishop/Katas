@@ -11,15 +11,7 @@
 
 // The order of the permutations doesn't matter.
 
-const checkUnique = (arr) => {
-    const visited = new Set();
-    arr.forEach(str => {if (!visited.has(str)) visited.add(str)});
-
-    if (Array.from(visited).length === arr.length) return true;
-    return false;
-};
-
-const permutations = (string, finalArray = [], i = 0) => {
+const permutations = (string, finalArray = [], i = 0, visited =  new Set()) => {
     if (string.length === 2) {
         if (string.split('')[0] === string.split('')[1]) {
             finalArray.push(string);
@@ -27,8 +19,8 @@ const permutations = (string, finalArray = [], i = 0) => {
         };
     };
 
-	if (string.length <= 2 && finalArray.length === string.length && checkUnique(finalArray)) return finalArray;
-    if (i === 5000) return Array.from(new Set(finalArray));
+	if (string.length <= 2 && finalArray.length === string.length) return finalArray;
+    if (i === 5000) return finalArray;
 
     const splitString = string.split('');
 
@@ -40,7 +32,8 @@ const permutations = (string, finalArray = [], i = 0) => {
         splitString[randNum] = replacement;
     };
 
-    finalArray.push(splitString.join(''));
+    if (!visited.has(splitString.join(''))) finalArray.push(splitString.join(''));
+    visited.add(splitString.join(''));
 
-    return permutations(string, finalArray, i += 1);
+    return permutations(string, finalArray, i += 1, visited);
 };
