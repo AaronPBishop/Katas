@@ -44,5 +44,3 @@ const permutations = (string, finalArray = [], i = 0) => {
 
     return permutations(string, finalArray, i += 1);
 };
-
-console.log(permutations('abcd'));

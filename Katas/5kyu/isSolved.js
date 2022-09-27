@@ -16,46 +16,25 @@
 // You may assume that the board passed in is valid in the context of a game of Tic-Tac-Toe.
 
 const isSolved = (board) => {
-    const rows = { r0: [], r1: [], r2: [] };
-    const cols = { c0: [], c1: [], c2: [] };
-    for (let row = 0; row < board.length; row++) {
-        let currRow = `r${row}`;
+    let isTie = true;
+    for (let i = 0; i < board.length; i++) {
+        if (board[i].includes(0)) isTie = false;
+        for (let j = 0; j < board[i].length; j++) {
+            const currVal = board[i][j];
 
-        for (let col = 0; col < board[row].length; col++) {
-            let currCol = `c${col}`;
+            if (currVal === 1 && j === 0 && currVal === board[i][j + 1] && currVal === board[i][j + 2]) return 1;
+            if (currVal === 2 && j === 0 && currVal === board[i][j + 1] && currVal === board[i][j + 2]) return 2;
 
-            rows[currRow].push(board[row][col]);
-            cols[currCol].push(board[row][col]);
+            if (currVal === 1 && i === 0 && currVal === board[i + 1][j] && currVal === board[i + 2][j]) return 1;
+            if (currVal === 2 && i === 0 && currVal === board[i + 1][j] && currVal === board[i + 2][j]) return 2;
+
+            if (currVal === 1 && i === 0 && j === 0 && currVal === board[i + 1][j + 1] && currVal === board[i + 2][j + 2]) return 1;
+            if (currVal === 2 && i === 0 && j === 0 && currVal === board[i + 1][j + 1] && currVal === board[i + 2][j + 2]) return 2;
+
+            if (currVal === 1 && i === 0 && j === 2 && currVal === board[i + 1][j - 1] && currVal === board[i + 2][j - 2]) return 1;
+            if (currVal === 2 && i === 0 && j === 2 && currVal === board[i + 1][j - 1] && currVal === board[i + 2][j - 2]) return 2;
         };
     };
-    
-    const rowVals = Object.values(rows);
-    const colVals = Object.values(cols);
 
-    let isTie = true;
-    for (let row = 0; row < rowVals.length; row++) {
-        let currRow = rowVals[row];
-        if (currRow.includes(0)) isTie = false;
-
-        let rowTotal = 0;
-        currRow.forEach(val => rowTotal += Number(val));
-        if (rowTotal === 3 && !currRow.includes(0)) return 1;
-        if (rowTotal === 6 && !currRow.includes(0)) return 2;
-    };
-
-    for (let col = 0; col < colVals.length; col++) {
-        let currCol = colVals[col];
-        if (currCol.includes(0)) isTie = false;
-
-        let colTotal = 0;
-        currCol.forEach(val => colTotal += Number(val));
-        if (colTotal === 3 && !currCol.includes(0)) return 1;
-        if (colTotal === 6 && !currCol.includes(0)) return 2;
-    };
-    
-    if (isTie) return 0;
-    return -1;
+    return isTie ? 0 : -1;
 };
-
-let newBoard = [[0, 0, 1], [0, 1, 2], [2, 1, 0]];
-console.log(isSolved(newBoard));
