@@ -1,6 +1,6 @@
 **Katas**
 is a personal repository for 'code-challenge' style problems from the online platform;
-[Codewars](https://www.codewars.com)
+[Codewars.](https://www.codewars.com)
 
 *From the website:* 
 >"On the platform, software developers train on programming challenges known as kata. These discrete programming exercises train a range of skills in a variety of programming languages."
