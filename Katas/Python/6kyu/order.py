@@ -9,29 +9,24 @@
 # "4of Fo1r pe6ople g3ood th5e the2"  -->  "Fo1r the2 g3ood 4of th5e pe6ople"
 # ""  -->  ""
 
-def order(sentence, orderDctnry = {}, i = 0, length = 0):
-    if i == 0 and len(sentence) == 0: return ""
-
-    if i == 0: length = len(sentence.split())
-    
-    if len(list(orderDctnry.keys())) == length: 
-        keys = sorted(list(orderDctnry.keys()))
-        orderedSentence = []
-
-        for i in range(len(keys)):
-            orderedSentence.append(orderDctnry[keys[i]])
-
-        return ' '.join(orderedSentence)
-
+def order(sentence):
+    orderDctnry = {}
     nums = '1234567890'
 
     sentenceList = sentence.split()
-    currWord = sentenceList.pop(0)
 
-    for i in range(len(currWord)):
-        currLtr = list(currWord)[i]
+    for i in range(len(sentenceList)):
+        currWord = list(sentenceList[i])
+
+        for j in range(len(currWord)):
+            currLtr = currWord[j]
         
-        if currLtr in nums:
-            orderDctnry[currLtr] = currWord
-    
-    return order(' '.join(sentenceList), orderDctnry, i, length)
+            if currLtr in nums: orderDctnry[currLtr] = currWord
+
+    keys = sorted(list(orderDctnry.keys()))
+    orderedSentence = []
+
+    for i in range(len(keys)):
+        orderedSentence.append(''.join(orderDctnry[keys[i]]))
+
+    return ' '.join(orderedSentence)
