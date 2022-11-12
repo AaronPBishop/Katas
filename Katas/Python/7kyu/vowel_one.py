@@ -10,14 +10,4 @@
 
 def vowel_one(s):
     vowels = 'aeiou'
-    finalArr = []
-
-    for i in range(len(s)):
-        currLetter = s[i].lower()
-
-        if currLetter in vowels:
-            finalArr.append(1)
-        else:
-            finalArr.append(0)
-
-    return ''.join(map(str, finalArr))
+    return ''.join(map(str, [1 if el.lower() in vowels else 0 for el in s]))
