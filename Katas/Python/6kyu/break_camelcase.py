@@ -7,5 +7,3 @@
 
 def break_camelcase(str):
     return ''.join([f' {el}' if el.isupper() else el for el in list(str)])
-
-print(break_camelcase('camelCasing'))
