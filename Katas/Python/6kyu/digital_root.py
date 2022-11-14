@@ -8,19 +8,13 @@
 # 132189  -->  1 + 3 + 2 + 1 + 8 + 9 = 24  -->  2 + 4 = 6
 # 493193  -->  4 + 9 + 3 + 1 + 9 + 3 = 29  -->  2 + 9 = 11  -->  1 + 1 = 2
 
-def digital_root(num, sum = 0, i = 0):
-    if len(list((str(num)))) == 2 and 1 == 0:
-        return list(str(num))[0] + list(str(num))[1]
-    
+def digital_root(num, sum = 0):
     if len(list((str(num)))) == 0:
         if len(list(str((sum)))) > 1:
-            return digital_root(sum, sum = 0, i = 0)
+            return digital_root(sum, sum = 0)
         return sum
 
     lsNum = list(str(num))
-    currNum = lsNum.pop()
+    sum += int(lsNum.pop())
 
-    sum += int(currNum)
-    i += 1
-
-    return digital_root(''.join(lsNum), sum, i)
+    return digital_root(''.join(lsNum), sum)
