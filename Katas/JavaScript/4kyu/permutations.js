@@ -18,10 +18,7 @@ const hasDuplicates = (str) => {
         if (letters[letter] === undefined) letters[letter] = 1;
     });
 
-    for (let key in letters) {
-        let currLetter = letters[key];
-        if (currLetter > 1) return letters;
-    };
+    for (let key in letters) if (letters[key] > 1) return letters;
 
     return false;
 };
@@ -30,7 +27,7 @@ const numPermutations = (str) => {
     if (hasDuplicates(str) === false) {
         let multiplier = 1;
 
-        for (let i = 1; i <= str.length; i++) multiplier *= i;
+        for (let i = 1; i <= str.length; i++);
 
         return multiplier;
     };
@@ -44,11 +41,10 @@ const numPermutations = (str) => {
         let currLetter = str[i];
 
         if (letters[currLetter] > 1 && !visited.has(currLetter)) {
-            for (let j = 1; j <= letters[currLetter]; j++) {
-                divisor *= j;
-            };
+            for (let j = 1; j <= letters[currLetter]; j++) divisor *= j;
             visited.add(currLetter);
         };
+
         multiplier *= i;
     };
 
@@ -87,3 +83,32 @@ const permutations = (string, finalArray = [], i = 0, visited = new Set()) => {
 
     return permutations(string, finalArray, i, visited);
 };
+
+// Alternate method
+
+// const permutes = (string) => {
+//     var s = string.split('').sort();
+//     var res = [s.join('')]
+//     while(true) {
+    
+//       var j = s.length - 2;
+//       while (j != -1 && s[j] >= s[j + 1])
+//         j--;
+//       if(j == -1)
+//         break;
+        
+//       var k = s.length - 1;
+//       while(s[j] >= s[k])
+//         k--;
+      
+//       [s[j], s[k]] = [s[k], s[j]];
+//       var l = j + 1, r = s.length - 1;
+//       while (l<r) {
+//         [s[l], s[r]] = [s[r], s[l]];
+//         l++;
+//         r--;
+//       }
+//       res.push(s.join(''));
+//     }
+//     return res;
+// }
