@@ -1,3 +1,4 @@
+from LinkedList import LinkedList
 # Write a function that takes a string of braces, and determines if the order of the braces is valid. It should return true if the string is valid, and false if it's invalid.
 
 # This Kata is similar to the Valid Parentheses Kata, but introduces new characters: brackets [], and curly braces {}. Thanks to @arnedag for the idea!
@@ -14,7 +15,6 @@
 # "[(])"     =>  False
 # "[({})](]" =>  False
 
-
 def valid_braces(string):
     mapBraces = {
         '[': ']',
@@ -22,16 +22,16 @@ def valid_braces(string):
         '(': ')'
     }
 
-    stack = []
+    stack = LinkedList()
     for i in range(len(string)):
         if string[i] in mapBraces.keys():
-            stack.append(string[i])
+            stack.add_to_tail(string[i])
             
         if string[i] in mapBraces.values():
             try:
-                if string[i] == mapBraces[stack[len(stack) - 1]]:
-                    stack.pop()
+                if string[i] == mapBraces[stack.tail.value]:
+                    stack.remove_tail()
             except:
                 return False
 
-    return len(stack) < 1
+    return stack.__len__() < 2
