@@ -27,3 +27,14 @@ def fill_tuple(tup, val, length):
 
     return tuple(finalLs)    
 
+
+def order_decorator(cb):
+    def inner(var):
+        print(1)
+        callCb = cb(var)
+        print(3)
+        return callCb
+    return inner
+
+x = "2"
+print(x in {"1": "one", 1: "one", 2: "two"})
