@@ -178,77 +178,88 @@ const orientSelf = (currOrientation, finalDirection) => {
     return directions[currOrientation][finalDirection];
 };
 
-const getDirection = (currPos, nextPos) => {
-    const [currRow, currCol] = currPos;
-    const [nextRow, nextCol] = nextPos;
+const validRoute = (currRow, currCol, currOrientation, grid, visited, escapeCoords) => {
+    const posCopy = [currRow, currCol];
+    const gridCopy = [ ...grid ];
 
-    if (currRow === nextRow && currCol < nextCol) return 'R';
-    if (currRow === nextRow && currCol > nextCol) return 'L';
-    if (currRow < nextRow && currCol === nextCol) return 'D';
-    if (currRow > nextRow && currCol === nextCol) return 'U';
-};
+    let foundEnd = false;
+    while (!foundEnd) {
+        let [pos1, pos2] = posCopy;
+        const nextPos = getNextPos([pos1, pos2], gridCopy, visited);
 
-const escapeFinder = (maze) => {
-    const grid = maze.map(str => str.split(''));
-
-    const canEscape = isPossible(grid);
-    if (!canEscape.isValid) return [];
-
-    const visited = new Set([]);
-    const queue = [];
-    const startingPositions = getPos(grid);
-
-    for (let pos of startingPositions) {
-        const [row, col, orientation] = pos;
-        queue.push({
-            path: [pos],
-            orientation: orientation,
-            row: row,
-            col: col,
-        });
-    };
-
-    while (queue.length > 0) {
-        const curr = queue.shift();
-        const { path, orientation, row, col } = curr;
-
-        const nextPos = getNextPos([row, col], grid, visited);
+        if (!Object.keys(nextPos).length) {
+            foundEnd = true;
+            return false;
+        };
 
         for (let key in nextPos) {
             const [nextRow, nextCol] = nextPos[key];
-            const [newOrientation] = orientSelf(orientation, key);
+            const newOrientation = orientSelf(currOrientation, key)[0];
 
-            const newPath = [...path, [nextRow, nextCol, newOrientation]];
+            gridCopy[nextRow][nextCol] = newOrientation;
+            gridCopy[pos1][pos2] = ' ';
 
-            if (canEscape.escapeCoords.some(([r, c]) => r === nextRow && c === nextCol)) {
-                const moves = [];
-                for (let i = 0; i < newPath.length - 1; i++) {
-                    const [currRow, currCol, currOrientation] = newPath[i];
-                    const [nextRow, nextCol] = newPath[i + 1];
+            pos1 = nextRow;
+            pos2 = nextCol;
 
-                    const move = orientSelf(currOrientation, getDirection([currRow, currCol], [nextRow, nextCol]))[1];
+            visited.add(`${pos1}, ${pos2}`);
 
-                    if (move === 'F') moves.push('F');
-                    if (move !== 'F') {
-                        moves.push(move);
-                        moves.push('F');
-                    };
-                };
-
-                return moves;
-            };
-
-            if (!visited.has(`${nextRow},${nextCol}`)) {
-                visited.add(`${nextRow},${nextCol}`);
-                queue.push({
-                    path: newPath,
-                    orientation: newOrientation,
-                    row: nextRow,
-                    col: nextCol,
-                });
+            for (let coord of escapeCoords) {
+                const [escapeRow, escapeCol] = coord;
+                if (nextRow === escapeRow && nextCol === escapeCol) foundEnd = true;
             };
         };
     };
 
-    return [];
+    return true;
 };
+
+const escapeFinder = (maze) => {
+    const grid = [];
+    for (let str of maze) grid.push(str.split(''));
+
+    const canEscape = isPossible(grid);
+    if (!canEscape.isValid) return [];
+
+    const moves = [];
+    const visited = new Set([]);
+
+    let foundEnd = false;
+    while (!foundEnd) {
+        const positions = getPos(grid);
+        debugger
+
+        for (let pos of positions) {
+            const [currRow, currCol, currOrientation] = pos;
+
+            const nextPos = getNextPos([currRow, currCol], grid, visited);
+            
+            if (!validRoute(currRow, currCol, currOrientation, grid, visited, canEscape.escapeCoords)) continue;
+
+            for (let key in nextPos) {
+                const [nextRow, nextCol] = nextPos[key];
+                const [newOrientation, move] = orientSelf(currOrientation, key);
+
+                grid[nextRow][nextCol] = newOrientation;
+                grid[currRow][currCol] = ' ';
+
+                if (move === 'F') moves.push('F');
+                if (move !== 'F') {
+                    moves.push(move);
+                    moves.push('F');
+                };
+
+                visited.add(`${currRow}, ${currCol}`);
+
+                for (let coord of canEscape.escapeCoords) {
+                    const [escapeRow, escapeCol] = coord;
+                    if (nextRow === escapeRow && nextCol === escapeCol) foundEnd = true;
+                };
+            };
+        };
+    };
+
+    return moves;
+};
+// rename function 'escape' to pass tests
+console.log(escapeFinder(easyMaze));
