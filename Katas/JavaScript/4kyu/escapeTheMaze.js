@@ -209,6 +209,7 @@ const escapeFinder = (maze) => {
     };
 
     while (queue.length > 0) {
+        debugger
         const curr = queue.shift();
         const { path, orientation, row, col } = curr;
 
