@@ -15,8 +15,36 @@ const exampleBoard = [
 
 // Test cases will provide various array and string sizes (squared arrays up to 150x150 and strings up to 150 uppercase letters). You do not have to check whether the string is a real word or not, only if it's a valid guess.
 
-const checkWord = ( board, word ) => {
+const checkWord = (board, word) => {
+    const boardCopy = [...board];
+    const splitWord = word.split("");
+  
+    const dfs = (row, col, index) => {
+      if (row < 0 || row >= boardCopy.length || col < 0 || col >= boardCopy[0].length || boardCopy[row][col] !== splitWord[index]) return false;
+  
+      if (index === splitWord.length - 1) return true;
+  
+      const temp = boardCopy[row][col];
+      boardCopy[row][col] = null;
+  
+      const res = dfs(row - 1, col, index + 1) ||
+                  dfs(row + 1, col, index + 1) ||
+                  dfs(row, col - 1, index + 1) ||
+                  dfs(row, col + 1, index + 1) ||
+                  dfs(row - 1, col - 1, index + 1) ||
+                  dfs(row - 1, col + 1, index + 1) ||
+                  dfs(row + 1, col - 1, index + 1) ||
+                  dfs(row + 1, col + 1, index + 1);
+  
+        boardCopy[row][col] = temp;
+        return res;
+    };
+  
+    for (let row = 0; row < boardCopy.length; row++) {
+      for (let col = 0; col < boardCopy[row].length; col++) {
+        if (dfs(row, col, 0)) return true;
+      };
+    };
+  
     return false;
 };
-
-console.log(checkWord(exampleBoard, 'BINGO'))
