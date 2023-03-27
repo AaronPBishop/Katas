@@ -46,15 +46,83 @@ const hardMaze = [
     '######## #'
 ];
 
-const getPos = (grid) => {
-    const symbols = ['<', '>', 'v', '^'];
-    for (let row = 0; row < grid.length; row++) {
-        for (let col = 0; col < grid[row].length; col++) {
-            if (symbols.includes(grid[row][col])) return [row, col, grid[row][col]];
+const insaneMaze = [
+    "#########################################",
+    "#<    #       #     #         # #   #   #",
+    "##### # ##### # ### # # ##### # # # ### #",
+    "# #   #   #   #   #   # #     #   #   # #",
+    "# # # ### # ########### # ####### # # # #",
+    "#   #   # # #       #   # #   #   # #   #",
+    "####### # # # ##### # ### # # # #########",
+    "#   #     # #     # #   #   # # #       #",
+    "# # ####### ### ### ##### ### # ####### #",
+    "# #             #   #     #   #   #   # #",
+    "# ############### ### ##### ##### # # # #",
+    "#               #     #   #   #   # #   #",
+    "##### ####### # ######### # # # ### #####",
+    "#   # #   #   # #         # # # #       #",
+    "# # # # # # ### # # ####### # # ### ### #",
+    "# # #   # # #     #   #     # #     #   #",
+    "# # ##### # # ####### # ##### ####### # #",
+    "# #     # # # #   # # #     # #       # #",
+    "# ##### ### # ### # # ##### # # ### ### #",
+    "#     #     #     #   #     #   #   #    ",
+    "#########################################"
+];
+
+const isPossible = (grid) => {
+    const escapeCoords = [];
+
+    let validTopRow = false;
+    let validBottomRow = false;
+    let validLeftSide = false;
+    let validRightSide = false;
+
+    for (let i = 0; i < grid[0].length; i++) {
+        const topRow = grid[0][i];
+        const bottomRow = grid[grid.length - 1][i];
+
+        if (topRow === ' ') {
+            validTopRow = true;
+            escapeCoords.push([0, i]);
+        };
+
+        if (bottomRow === ' ') {
+            validBottomRow = true;
+            escapeCoords.push([grid.length - 1, i]);
         };
     };
 
-    return [];
+    for (let i = 0; i < grid.length; i++) {
+        const leftSide = grid[i][0];
+        const rightSide = grid[i][grid[i].length - 1];
+
+        if (leftSide === ' ') {
+            validLeftSide = true;
+            escapeCoords.push([i, 0])
+        };
+
+        if (rightSide === ' ') {
+            validRightSide = true;
+            escapeCoords.push([i, grid[i].length - 1]);
+        };
+    };
+
+    if (validTopRow || validBottomRow || validLeftSide || validRightSide) return { isValid: true, escapeCoords };
+    return { isValid: false, escapeCoords };
+};
+
+const getPos = (grid) => {
+    const symbols = ['<', '>', 'v', '^'];
+
+    const positions = [];
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[row].length; col++) {
+            if (symbols.includes(grid[row][col])) positions.push([row, col, grid[row][col]]);
+        };
+    };
+
+    return positions;
 };
 
 const getNextPos = (currPos, grid, visited) => {
@@ -70,6 +138,7 @@ const getNextPos = (currPos, grid, visited) => {
     
     for (let key in neighbors) {
         const [nRow, nCol] = neighbors[key];
+
         if (nRow >= 0 && nRow < grid.length && nCol >= 0 && nCol < grid[0].length) {
             if (!visited.has(`${nRow}, ${nCol}`) && grid[nRow][nCol] !== '#') validMoves[key] = [nRow, nCol];
         };
@@ -107,47 +176,63 @@ const orientSelf = (currOrientation, finalDirection) => {
     };
 
     return directions[currOrientation][finalDirection];
-}
+};
 
 const escapeFinder = (maze) => {
     const grid = [];
     for (let str of maze) grid.push(str.split(''));
 
-    const moves = [];
+    const canEscape = isPossible(grid);
+    if (!canEscape.isValid) return [];
+
     const visited = new Set([]);
+
+    let numPositions = 1;
+    const nodes = { startingNode: [] };
 
     let foundEnd = false;
     while (!foundEnd) {
-        const [currRow, currCol, currOrientation] = getPos(grid);
-        const nextPos = getNextPos([currRow, currCol], grid, visited);
+        const positions = getPos(grid);
 
-        if (!Object.keys(nextPos).length) {
-            foundEnd = true;
-            break;
-        };
+        for (let pos of positions) {
+            const [currRow, currCol, currOrientation] = pos;
 
-        for (let key in nextPos) {
-            const [nextRow, nextCol] = nextPos[key];
-            const [newOrientation, move] = orientSelf(currOrientation, key);
+            if (positions.length > numPositions) {
+                if (!nodes[`node${currRow}${currCol}`]) nodes[`node${currRow}${currCol}`] = [ ...nodes.startingNode ];
+                numPositions++;
+            };
 
-            if (move === 'F') {
+            const nextPos = getNextPos([currRow, currCol], grid, visited);
+
+            for (let key in nextPos) {
+                const [nextRow, nextCol] = nextPos[key];
+                const [newOrientation, move] = orientSelf(currOrientation, key);
+
                 grid[nextRow][nextCol] = newOrientation;
                 grid[currRow][currCol] = ' ';
 
-                moves.push('F');
-                visited.add(`${currRow}, ${currCol}`);
-                visited.add(`${nextRow}, ${nextCol}`);
-            };
+                for (let key in nodes) {
+                    if (move === 'F') {nodes[key].push('F');}
+                    if (move !== 'F') {
+                        nodes[key].push(move);
+                        nodes[key].push('F');
+                    };
 
-            if (move !== 'F') {
-                grid[currRow][currCol] = newOrientation;
+                    visited.add(`${currRow}, ${currCol}`);
 
-                moves.push(move);
+                    for (let coord of canEscape.escapeCoords) {
+                        const [escapeRow, escapeCol] = coord;
+                        if (nextRow === escapeRow && nextCol === escapeCol) {
+                            foundEnd = true;
+                            return nodes[key]
+                        };
+                    };
+                };
             };
         };
     };
 
-    return moves;
+    return nodes;
 };
 // rename function 'escape' to pass tests
-console.log(escapeFinder(hardMaze))
+console.log(escapeFinder(hardMaze));
