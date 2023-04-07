@@ -8,86 +8,36 @@
 
 // Test cases will provide various array and string sizes (squared arrays up to 150x150 and strings up to 150 uppercase letters). You do not have to check whether the string is a real word or not, only if it's a valid guess.
 
-// const checkWord = (board, word) => {
-//     const boardCopy = [...board];
-//     const splitWord = word.split("");
-  
-//     const dfs = (row, col, index) => {
-//       if (row < 0 || row >= boardCopy.length || col < 0 || col >= boardCopy[0].length || boardCopy[row][col] !== splitWord[index]) return false;
-  
-//       if (index === splitWord.length - 1) return true;
-  
-//       const temp = boardCopy[row][col];
-//       boardCopy[row][col] = null;
-  
-//       const res = dfs(row - 1, col, index + 1) ||
-//                   dfs(row + 1, col, index + 1) ||
-//                   dfs(row, col - 1, index + 1) ||
-//                   dfs(row, col + 1, index + 1) ||
-//                   dfs(row - 1, col - 1, index + 1) ||
-//                   dfs(row - 1, col + 1, index + 1) ||
-//                   dfs(row + 1, col - 1, index + 1) ||
-//                   dfs(row + 1, col + 1, index + 1);
-  
-//         boardCopy[row][col] = temp;
-//         return res;
-//     };
-  
-//     for (let row = 0; row < boardCopy.length; row++) {
-//       for (let col = 0; col < boardCopy[row].length; col++) {
-//         if (dfs(row, col, 0)) return true;
-//       };
-//     };
-  
-//     return false;
-// };
-
-const hasValidNeighbor = (board, currPos, nextLtr) => {
-  const [row, col] = currPos;
-
-  const neighbors = [
-    [row - 1, col],
-    [row + 1, col],
-    [row, col - 1],
-    [row, col + 1],
-    [row - 1, col - 1],
-    [row - 1, col + 1],
-    [row + 1, col - 1],
-    [row + 1, col + 1]
-  ];
-
-  for (let nbr of neighbors) {
-    const [nRow, nCol] = nbr;
-
-    if (board[nRow] && board[nCol]) {
-      if (board[nRow][nCol] === nextLtr) return true;
-    };
-  };
-
-  return false;
-};
-
-const getPositions = (board, ltr) => {
-  const startPositions = [];
-
-  for (let i = 0; i < board.length; i++) {
-    for (let j = 0; j < board[i].length; j++) {
-      if (board[i][j] === ltr) startPositions.push([i, j]);
-    };
-  };
-
-  return startPositions;
-};
-
 const checkWord = (board, word) => {
-  return false;
+    const boardCopy = [...board];
+    const splitWord = word.split("");
+  
+    const dfs = (row, col, index) => {
+      if (row < 0 || row >= boardCopy.length || col < 0 || col >= boardCopy[0].length || boardCopy[row][col] !== splitWord[index]) return false;
+  
+      if (index === splitWord.length - 1) return true;
+  
+      const temp = boardCopy[row][col];
+      boardCopy[row][col] = null;
+  
+      const res = dfs(row - 1, col, index + 1) ||
+                  dfs(row + 1, col, index + 1) ||
+                  dfs(row, col - 1, index + 1) ||
+                  dfs(row, col + 1, index + 1) ||
+                  dfs(row - 1, col - 1, index + 1) ||
+                  dfs(row - 1, col + 1, index + 1) ||
+                  dfs(row + 1, col - 1, index + 1) ||
+                  dfs(row + 1, col + 1, index + 1);
+  
+        boardCopy[row][col] = temp;
+        return res;
+    };
+  
+    for (let row = 0; row < boardCopy.length; row++) {
+      for (let col = 0; col < boardCopy[row].length; col++) {
+        if (dfs(row, col, 0)) return true;
+      };
+    };
+  
+    return false;
 };
-
-const exampleBoard = [ 
-  ["I","L","A","W"],
-  ["B","N","G","E"],
-  ["I","U","A","O"],
-  ["A","S","R","L"] 
-];
-
-console.log(checkWord(exampleBoard, 'BUGARS'));
