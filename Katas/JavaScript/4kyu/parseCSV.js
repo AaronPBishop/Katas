@@ -53,5 +53,6 @@
 
 
 const parseCSV = (input, separator, quote) => {
-
+    separator = separator || ',';
+    quote = quote || '"';
 };
