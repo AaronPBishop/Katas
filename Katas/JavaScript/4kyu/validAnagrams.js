@@ -40,7 +40,3 @@ const is_anagrams = (arr) => {
 
     return true;
 };
-
-const input = ["cat"];
-
-console.log(is_anagrams(input))
