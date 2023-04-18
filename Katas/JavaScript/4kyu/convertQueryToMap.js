@@ -25,3 +25,25 @@ foo=1&foo.bar=2
 All properties and values will be strings — and the values should be left as strings to pass the tests.
 Make sure you decode the URI components correctly
 */
+
+const convertQueryToMap = (query) => {
+    if (!query.length) return {};
+    
+    const obj = {};
+    query.split('&').forEach(param => {
+      const [key, value] = param.split('=');
+      const keys = key.split('.');
+
+      let nestedObj = obj;
+      for (let i = 0; i < keys.length - 1; i++) {
+        const k = decodeURIComponent(keys[i]);
+        nestedObj[k] = nestedObj[k] || {};
+        nestedObj = nestedObj[k];
+      };
+
+      const k = decodeURIComponent(keys[keys.length - 1]);
+      nestedObj[k] = decodeURIComponent(value);
+    });
+
+    return obj;
+};
