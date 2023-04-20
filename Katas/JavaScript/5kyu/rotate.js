@@ -26,13 +26,14 @@ const test = [
     [15,14,12,16]
 ];
 
-// Output: [
-//  [15,13,2,5],
-//  [14,3,4,1],
-//  [12,6,8,9],
-//  [16,7,10,11]
-// ]
-
 const rotate = (matrix) => {
-
+    const n = matrix.length;
+   
+    for (let i = 0; i < n; i++) {
+      for (let j = i; j < n; j++) {
+        [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];
+      };
+    };
+  
+    for (let i = 0; i < n; i++) matrix[i].reverse();
 };
