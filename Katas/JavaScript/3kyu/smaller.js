@@ -14,8 +14,45 @@
 const test = [5, 4, 3, 2, 1];
 // [4, 3, 2, 1, 0]
 
-const smaller = (arr) => {
+const merge = (arr, indices, left, mid, right, res) => {
+    const tmp = [];
+    let i = left;
+    let j = mid + 1;
+    let k = 0;
 
+    while (i <= mid && j <= right) {
+      if (arr[indices[i]] <= arr[indices[j]]) {
+        res[indices[i]] += j - mid - 1;
+        tmp[k++] = indices[i++];
+      } else tmp[k++] = indices[j++];
+    };
+
+    while (i <= mid) {
+      res[indices[i]] += j - mid - 1;
+      tmp[k++] = indices[i++];
+    };
+
+    while (j <= right) tmp[k++] = indices[j++];
+    
+    for (let l = 0; l < k; l++) indices[left + l] = tmp[l];
 };
 
-console.log(smaller());
+const mergeSort = (arr, indices, left, right, res) => {
+    if (left < right) {
+        const mid = Math.floor((left + right) / 2);
+
+        mergeSort(arr, indices, left, mid, res);
+        mergeSort(arr, indices, mid + 1, right, res);
+        merge(arr, indices, left, mid, right, res);
+    };
+};
+
+const smaller = (arr) => {
+    const res = Array(arr.length).fill(0);
+    const indices = arr.map((_, i) => i);
+    
+    mergeSort(arr, indices, 0, arr.length - 1, res);
+    return res;
+};
+
+console.log(smaller(test));
