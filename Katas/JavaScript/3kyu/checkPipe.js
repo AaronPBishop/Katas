@@ -35,6 +35,7 @@ A leak may involve a pipe pointing to an empty cell in the map, like this: ━�
 There can be also 'old pipes` on the map which are not connected to water sources. You should ignore such pipes.
 */
 
+// Add 'validConnections'
 const mapPipes = (pipe) => {
   const pipes = {
     '┗': { inputs: ['UP', 'RIGHT'] },
@@ -87,8 +88,20 @@ const checkNeighbors = (map, currPipe, currPos, inputs) => {
   return false;
 };
 
+const areOldPipes = (map) => {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[i].length; j++) {
+      if ((i === 0 || i === map.length - 1) && map[i][j] !== '.') return false;
+      if ((j === 0 || j === map[i].length - 1) && map[i][j] !== '.') return false;
+    };
+  };
+
+  return true;
+};
+
 const checkPipe = (map) => {
-    //debugger
+    if (areOldPipes(map)) return true;
+    
     for (let i = 0; i < map.length; i++) {
       const currPipes = map[i].split('');
 
