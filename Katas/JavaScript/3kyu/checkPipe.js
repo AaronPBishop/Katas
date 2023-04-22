@@ -35,14 +35,73 @@ A leak may involve a pipe pointing to an empty cell in the map, like this: ━�
 There can be also 'old pipes` on the map which are not connected to water sources. You should ignore such pipes.
 */
 
-const pipe = [
-    '╋━━┓',
-    '┃..┃',
-    '┛..┣'
-];
+const mapPipes = (pipe) => {
+  const pipes = {
+    '┗': { inputs: ['UP', 'RIGHT'] },
+    '┓': { inputs: ['LEFT', 'DOWN'] },
+    '┏': { inputs: ['RIGHT', 'DOWN'] },
+    '┛': { inputs: ['LEFT', 'UP'] },
+    '━': { inputs: ['LEFT', 'RIGHT'] },
+    '┃': { inputs: ['UP', 'DOWN'] }, 
+    '┣': { inputs: ['UP', 'RIGHT', 'DOWN'] },
+    '┫': { inputs: ['UP', 'LEFT', 'DOWN'] },
+    '┳': { inputs: ['LEFT', 'RIGHT', 'DOWN'] },
+    '┻': { inputs: ['UP', 'LEFT', 'RIGHT'] },
+    '╋': { inputs: ['LEFT', 'UP', 'RIGHT', 'DOWN'] }
+  };
 
-// true
+  return pipes[pipe].inputs;
+};
+
+const checkNeighbors = (map, currPipe, currPos, inputs) => {
+  const [row, col] = currPos;
+
+  const illegaleDupes = ['┗', '┓', '┏', '┛'];
+  const mapPositions = {
+    'UP': [row - 1, col],
+    'DOWN': [row + 1, col],
+    'LEFT': [row, col - 1],
+    'RIGHT': [row, col + 1]
+  };
+
+  let check = 0;
+  for (let input of inputs) {
+    const [nRow, nCol] = mapPositions[input];
+
+    if (!map[nRow] || (map[nRow] && !map[nRow][nCol])) {
+      check++;
+      continue;
+    };
+
+    if (map[nRow][nCol] !== '.') { 
+      if (illegaleDupes.includes(currPipe) && map[nRow][nCol] !== currPipe) {
+        check++;
+        continue;
+      };
+      
+      check++;
+    };
+  };
+
+  if (check === inputs.length) return true;
+  return false;
+};
 
 const checkPipe = (map) => {
+    //debugger
+    for (let i = 0; i < map.length; i++) {
+      const currPipes = map[i].split('');
+
+      for (let j = 0; j < currPipes.length; j++) {
+        const currPipe = currPipes[j];
+
+        if (currPipe.length && currPipe !== '.') {
+          const inputs = mapPipes(currPipe);
+
+          if (!checkNeighbors(map, currPipe, [i, j], inputs)) return false;
+        };
+      };
+    };
+
     return true;
 };
