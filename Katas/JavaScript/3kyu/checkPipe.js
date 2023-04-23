@@ -86,6 +86,28 @@ const checkNeighbors = (map, currPos, directions, connections) => {
   return false;
 };
 
+const isOldPipe = (map, currPos, directions, connections) => {
+  const [row, col] = currPos;
+
+  const mapPositions = {
+    'UP': [row - 1, col],
+    'DOWN': [row + 1, col],
+    'LEFT': [row, col - 1],
+    'RIGHT': [row, col + 1]
+  };
+
+  let check = 0;
+  for (let dir of directions) {
+    const [nRow, nCol] = mapPositions[dir];
+
+    if (!map[nRow] || (map[nRow] && !map[nRow][nCol])) return false;
+    if (map[nRow][nCol] === '.' || !connections[dir].includes(map[nRow][nCol])) check++;
+  };
+
+  if (check === directions.length) return true;
+  return false;
+};
+
 const areOldPipes = (map) => {
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
@@ -109,6 +131,7 @@ const checkPipe = (map) => {
         if (currPipe.length && currPipe !== '.') {
           const { directions, connections } = mapPipes(currPipe);
 
+          if (isOldPipe(map, [i, j], directions, connections)) continue;
           if (!checkNeighbors(map, [i, j], directions, connections)) return false;
         };
       };
@@ -116,12 +139,3 @@ const checkPipe = (map) => {
 
     return true;
 };
-
-const pipe =  [
-  '.┳..',
-  '┏━┓.',
-  '.┳..', 
-  '┏━┓.' 
-];
-
-console.log(checkPipe(pipe));
