@@ -35,26 +35,32 @@ A leak may involve a pipe pointing to an empty cell in the map, like this: ━�
 There can be also 'old pipes` on the map which are not connected to water sources. You should ignore such pipes.
 */
 
-// Modify 'validConnections'
 const mapPipes = (pipe) => {
-  const pipes = {
-    '┗': { inputs: ['UP', 'RIGHT'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┓': { inputs: ['LEFT', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┏': { inputs: ['RIGHT', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┛': { inputs: ['LEFT', 'UP'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '━': { inputs: ['LEFT', 'RIGHT'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┃': { inputs: ['UP', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] }, 
-    '┣': { inputs: ['UP', 'RIGHT', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┫': { inputs: ['UP', 'LEFT', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┳': { inputs: ['LEFT', 'RIGHT', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '┻': { inputs: ['UP', 'LEFT', 'RIGHT'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] },
-    '╋': { inputs: ['LEFT', 'UP', 'RIGHT', 'DOWN'], connections: ['┓', '┏', '┛', '━', '┃', '┣', '┫', '┳', '┻', '╋'] }
+  const mapConnections = {
+    UP: ['┓', '┏', '┃', '┣', '┫', '┳', '╋'],
+    DOWN: ['┗', '┛', '┃', '┣', '┫', '┻', '╋'],
+    LEFT: ['┗', '┏', '━', '┣', '┳', '┻', '╋'],
+    RIGHT: ['┓', '┛', '━', '┫', '┳', '┻', '╋']
   };
 
-  return { inputs: pipes[pipe].inputs, connections: pipes[pipe].connections };
+  const pipes = {
+    '┗': { connections: { 'UP': mapConnections.UP, 'RIGHT': mapConnections.RIGHT } },
+    '┓': { connections: { 'LEFT': mapConnections.LEFT, 'DOWN': mapConnections.DOWN } },
+    '┏': { connections: { 'RIGHT': mapConnections.RIGHT, 'DOWN': mapConnections.DOWN } },
+    '┛': { connections: { 'LEFT': mapConnections.LEFT, 'UP': mapConnections.UP } },
+    '━': { connections: { 'LEFT': mapConnections.LEFT, 'RIGHT': mapConnections.RIGHT } },
+    '┃': { connections: { 'UP': mapConnections.UP, 'DOWN': mapConnections.DOWN } }, 
+    '┣': { connections: { 'UP': mapConnections.UP, 'RIGHT': mapConnections.RIGHT, 'DOWN': mapConnections.DOWN } },
+    '┫': { connections: { 'UP': mapConnections.UP, 'LEFT': mapConnections.LEFT, 'DOWN': mapConnections.DOWN } },
+    '┳': { connections: { 'LEFT': mapConnections.LEFT, 'RIGHT': mapConnections.RIGHT, 'DOWN': mapConnections.DOWN } },
+    '┻': { connections: { 'LEFT': mapConnections.LEFT, 'RIGHT': mapConnections.RIGHT, 'UP': mapConnections.UP } },
+    '╋': { connections: { 'UP': mapConnections.UP, 'DOWN': mapConnections.DOWN, 'LEFT': mapConnections.LEFT, 'RIGHT': mapConnections.RIGHT } }
+  };
+
+  return { directions: Object.keys(pipes[pipe].connections), connections: pipes[pipe].connections };
 };
 
-const checkNeighbors = (map, currPipe, currPos, inputs, connections) => {
+const checkNeighbors = (map, currPos, directions, connections) => {
   const [row, col] = currPos;
 
   const mapPositions = {
@@ -65,18 +71,18 @@ const checkNeighbors = (map, currPipe, currPos, inputs, connections) => {
   };
 
   let check = 0;
-  for (let input of inputs) {
-    const [nRow, nCol] = mapPositions[input];
+  for (let dir of directions) {
+    const [nRow, nCol] = mapPositions[dir];
 
     if (!map[nRow] || (map[nRow] && !map[nRow][nCol])) {
       check++;
       continue;
     };
 
-    if (map[nRow][nCol] !== '.' && connections.includes(map[nRow][nCol])) check++;
+    if (map[nRow][nCol] !== '.' && connections[dir].includes(map[nRow][nCol])) check++;
   };
 
-  if (check === inputs.length) return true;
+  if (check === directions.length) return true;
   return false;
 };
 
@@ -101,12 +107,21 @@ const checkPipe = (map) => {
         const currPipe = currPipes[j];
 
         if (currPipe.length && currPipe !== '.') {
-          const { connections, inputs } = mapPipes(currPipe);
+          const { directions, connections } = mapPipes(currPipe);
 
-          if (!checkNeighbors(map, currPipe, [i, j], inputs, connections)) return false;
+          if (!checkNeighbors(map, [i, j], directions, connections)) return false;
         };
       };
     };
 
     return true;
 };
+
+const pipe =  [
+  '.┳..',
+  '┏━┓.',
+  '.┳..', 
+  '┏━┓.' 
+];
+
+console.log(checkPipe(pipe));
