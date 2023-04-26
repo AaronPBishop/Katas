@@ -8,5 +8,3 @@ def move_zeros(lst):
     filtered.extend(zeroes)
     
     return filtered
-
-print(move_zeros([1, 0, 1, 2, 0, 1, 3]))
