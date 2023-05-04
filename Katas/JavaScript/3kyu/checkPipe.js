@@ -32,7 +32,29 @@ The leak is marked by the arrow pointing to the top left-hand corner of the map:
 
 A leak may involve a pipe pointing to an empty cell in the map, like this: ━━.. It may also involve a pipe pointing to another pipe that does not point back, like this: ━━┗
 
-There can be also 'old pipes` on the map which are not connected to water sources. You should ignore such pipes.
+There can be also 'old pipes` on the map which are not connected to water sources. You should ignore such pipes:
+    ....
+    .┛┛.
+    ....
+
+Example random test inputs:
+
+    .┣┫┏┓.┏┓...
+    .┣╋┫┃.┃┗┓..
+    .┣╋┫┃.┃.┗┓.
+    ┓┣╋┫┃.┃..┃┏
+    ┣┫┗┛┃.┃..┣┫
+    ┗┛..┗┓┃..┣┫
+    .....┗┛..┗┛
+    ........... -> true
+
+    ..┻╋┓..┳┳┛┫
+    ..┻.┫..┛..┣
+    ┫╋┳.┛..┗..┃
+    .┳┃.┃┻┳┗...
+    .╋┳.━┣┫┻...
+    ....┻┗┳┻...
+    ....┻┏..... -> false
 */
 
 const mapPipes = (pipe) => {

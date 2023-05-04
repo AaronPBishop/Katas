@@ -4,7 +4,7 @@ You are at start location [0, 0] in mountain area of NxN and you can only move i
 Location altitude is defined as an integer number (0-9).
 */
 
-const getNeighbors = (grid, currPos) => {
+const getNeighbors = (grid, currPos, currVal) => {
     const [row, col] = currPos;
     const neighbors = [
         [row - 1, col],
@@ -13,46 +13,49 @@ const getNeighbors = (grid, currPos) => {
         [row, col + 1]
     ];
 
-    return neighbors.filter(neighbor => {
+    const validNeighbors = [];
+    for (let neighbor of neighbors) {
         const [nRow, nCol] = neighbor;
 
-        if (grid[nRow] !== undefined && grid[nRow][nCol] !== undefined) return neighbor;
-    });
+        if (grid[nRow] !== undefined && grid[nRow][nCol] !== undefined) {
+            validNeighbors.push({ neighbor, diff: Math.abs(currVal - grid[nRow][nCol]) })
+        };
+    };
+
+    let sum = Infinity;
+    let bestN = null;
+    for (let neighbor of validNeighbors) {
+        const val = neighbor.diff;
+
+        if (val < sum) {
+            sum = val;
+            bestN = neighbor.neighbor;
+        }
+    };
+
+    return bestN;
 };
 
 const pathFinder = (area) => {
     const grid = [[]];
     area.split('').forEach(el => el === '\n' ? grid.push([]) : grid[grid.length - 1].push(Number(el)));
 
-    const distances = {};
-    const queue = [{ pos: [0, 0], sum: 0 }];
-    const visited = new Set([`${0}-${0}`]);
-
-    while (queue.length) {
-        const { pos, sum } = queue.shift();
-        const [row, col] = pos;
-        const key = `${row}-${col}`;
-
-        distances[key] = sum;
-
-        const neighbors = getNeighbors(grid, pos);
-        for (let neighbor of neighbors) {
-            const [nRow, nCol] = neighbor;
-            const nKey = `${nRow}-${nCol}`;
-
-            if (!visited.has(nKey)) {
-                visited.add(nKey);
-                queue.push({ pos: neighbor, sum: sum + Math.abs(grid[row][col] - grid[nRow][nCol])});
-            };
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            const currVal = grid[i][j];
+            console.log(getNeighbors(grid, [i, j], currVal))
         };
     };
 
-    return distances[`${grid.length - 1}-${grid.length - 1}`];
+    return;
 };
 
 const testArea = 
-`010
-101
-010`; // 4
+`777000
+007000
+007000
+007000
+007000
+007777`; // 0
 
 console.log(pathFinder(testArea));
