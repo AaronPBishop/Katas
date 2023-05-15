@@ -70,6 +70,14 @@ const insaneMaze = [
     "#########################################"
 ];
 
+class Traveler {
+    constructor(currOrientation, currPos, moves=[]) {
+        this.currOrientation = currOrientation;
+        this.currPos = currPos;
+        this.moves = moves;
+    };
+};
+
 const isPossible = (grid) => {
     const escapeCoords = [];
 
@@ -112,142 +120,128 @@ const isPossible = (grid) => {
     return { isValid: false, escapeCoords };
 };
 
-const getPos = (grid) => {
-    const symbols = ['<', '>', 'v', '^'];
+const getStartingPos = (grid) => {
+    const symbols = ['<', '>', '^', 'v'];
 
-    const positions = [];
-    for (let row = 0; row < grid.length; row++) {
-        for (let col = 0; col < grid[row].length; col++) {
-            if (symbols.includes(grid[row][col])) positions.push([row, col, grid[row][col]]);
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            if (symbols.includes(grid[i][j])) return { orientation: grid[i][j], coord: [i, j] };
         };
     };
 
-    return positions;
+    return;
 };
 
-const getNextPos = (currPos, grid, visited) => {
-    const [row, col] = currPos;
-    const neighbors = {
-        'L': [row, col - 1],
-        'R': [row, col + 1],
-        'U': [row - 1, col],
-        'D': [row + 1, col]
-    };
+const getNeighbors = (grid, currPos, visited) => {
+    const [currRow, currCol] = currPos;
 
-    const validMoves = {};
-    
-    for (let key in neighbors) {
-        const [nRow, nCol] = neighbors[key];
+    const neighbors = [
+        [currRow - 1, currCol],
+        [currRow + 1, currCol],
+        [currRow, currCol - 1],
+        [currRow, currCol + 1]
+    ];
 
-        if (nRow >= 0 && nRow < grid.length && nCol >= 0 && nCol < grid[0].length) {
-            if (!visited.has(`${nRow}, ${nCol}`) && grid[nRow][nCol] !== '#') validMoves[key] = [nRow, nCol];
+    const validNeighbors = [];
+    for (let neighbor of neighbors) {
+        const [nRow, nCol] = neighbor;
+
+        if ((nRow >= 0 && nRow < grid.length) && (nCol >= 0 && nCol < grid[0].length)) {
+            if (grid[nRow][nCol] !== '#' && !visited.has(`${nRow}-${nCol}`)) validNeighbors.push([nRow, nCol]);
         };
     };
 
-    return validMoves;
+    return validNeighbors;
 };
 
-const orientSelf = (currOrientation, finalDirection) => {
-    const directions = { 
-        '<': {
-            'L': ['<', 'F'],
-            'R': ['>', 'B'],
-            'U': ['^', 'R'],
-            'D': ['v', 'L']
-        },
-        '>': {
-            'L': ['<', 'B'],
-            'R': ['>', 'F'],
-            'U': ['^', 'L'],
-            'D': ['v', 'R']
-        },
-        '^': {
-            'L': ['<', 'L'],
-            'R': ['>', 'R'],
-            'U': ['^', 'F'],
-            'D': ['v', 'B']
-        },
-        'v': {
-            'L': ['<', 'R'],
-            'R': ['>', 'L'],
-            'U': ['^', 'B'],
-            'D': ['v', 'F']
-        }
-    };
-
-    return directions[currOrientation][finalDirection];
-};
-
-const getDirection = (currPos, nextPos) => {
+const getNextDirection = (currPos, nextPos) => {
     const [currRow, currCol] = currPos;
     const [nextRow, nextCol] = nextPos;
 
-    if (currRow === nextRow && currCol < nextCol) return 'R';
-    if (currRow === nextRow && currCol > nextCol) return 'L';
-    if (currRow < nextRow && currCol === nextCol) return 'D';
-    if (currRow > nextRow && currCol === nextCol) return 'U';
+    if (nextRow < currRow && nextCol === currCol) return 'UP';
+    if (nextRow > currRow && nextCol === currCol) return 'DOWN';
+    if (nextRow === currRow && nextCol < currCol) return 'LEFT';
+    if (nextRow === currRow && nextCol > currCol) return 'RIGHT';
 };
 
-const escapeFinder = (maze) => {
-    const grid = maze.map(str => str.split(''));
+const getNextMove = (currOrientation, currPos, nextPos) => {
+    const nextDir = getNextDirection(currPos, nextPos);
+
+    const mapMoves = {
+        '^': {
+            'UP': ['F', '^'],
+            'DOWN': ['B', 'v'],
+            'LEFT': ['L', '<'],
+            'RIGHT': ['R', '>']
+        },
+        'v': {
+            'UP': ['B', '^'],
+            'DOWN': ['F', 'v'],
+            'LEFT': ['R', '<'],
+            'RIGHT': ['L', '>']
+        },
+        '<': {
+            'UP': ['R', '^'],
+            'DOWN': ['L', 'v'],
+            'LEFT': ['F', '<'],
+            'RIGHT': ['B', '>']
+        },
+        '>': {
+            'UP': ['L', '^'],
+            'DOWN': ['R', 'v'],
+            'LEFT': ['B', '<'],
+            'RIGHT': ['F', '>']
+        }
+    };
+
+    return { move: mapMoves[currOrientation][nextDir][0], orientation: mapMoves[currOrientation][nextDir][1] };
+};
+
+const hasEscaped = (currPos, escapeCoords) => {
+    const [currRow, currCol] = currPos;
+    for (let coord of escapeCoords) {
+        const [cRow, cCol] = coord;
+        if (currRow === cRow && currCol === cCol) return true;
+    };
+
+    return false;
+};
+
+const escapeMaze = (maze) => {
+    const grid = maze.map(row => row.split(''));
+    const startingPos = getStartingPos(grid);
 
     const canEscape = isPossible(grid);
     if (!canEscape.isValid) return [];
+    
+    const startingNode = new Traveler(startingPos.orientation, startingPos.coord);
 
-    const visited = new Set([]);
-    const queue = [];
-    const startingPositions = getPos(grid);
+    const queue = [startingNode];
+    const visited = new Set([`${startingPos.coord[0]}-${startingPos.coord[1]}`]);
 
-    for (let pos of startingPositions) {
-        const [row, col, orientation] = pos;
-        queue.push({
-            path: [pos],
-            orientation: orientation,
-            row: row,
-            col: col,
-        });
-    };
+    while (queue.length) {
+        const currNode = queue.shift();
 
-    while (queue.length > 0) {
-        debugger
-        const curr = queue.shift();
-        const { path, orientation, row, col } = curr;
+        if (hasEscaped(currNode.currPos, canEscape.escapeCoords)) return currNode.moves;
 
-        const nextPos = getNextPos([row, col], grid, visited);
+        const neighbors = getNeighbors(grid, currNode.currPos, visited);
+        for (let neighbor of neighbors) {
+            const [nRow, nCol] = neighbor;
+            visited.add(`${nRow}-${nCol}`);
 
-        for (let key in nextPos) {
-            const [nextRow, nextCol] = nextPos[key];
-            const [newOrientation] = orientSelf(orientation, key);
+            const nextMove = getNextMove(currNode.currOrientation, currNode.currPos, neighbor);
 
-            const newPath = [...path, [nextRow, nextCol, newOrientation]];
+            if (nextMove.move !== 'F') {
+                const newNode = new Traveler(nextMove.orientation, neighbor, [...currNode.moves, nextMove.move]);
+                newNode.moves.push('F');
 
-            if (canEscape.escapeCoords.some(([r, c]) => r === nextRow && c === nextCol)) {
-                const moves = [];
-                for (let i = 0; i < newPath.length - 1; i++) {
-                    const [currRow, currCol, currOrientation] = newPath[i];
-                    const [nextRow, nextCol] = newPath[i + 1];
-
-                    const move = orientSelf(currOrientation, getDirection([currRow, currCol], [nextRow, nextCol]))[1];
-
-                    if (move === 'F') moves.push('F');
-                    if (move !== 'F') {
-                        moves.push(move);
-                        moves.push('F');
-                    };
-                };
-
-                return moves;
+                queue.push(newNode);
+                
+                continue;
             };
 
-            if (!visited.has(`${nextRow},${nextCol}`)) {
-                visited.add(`${nextRow},${nextCol}`);
-                queue.push({
-                    path: newPath,
-                    orientation: newOrientation,
-                    row: nextRow,
-                    col: nextCol,
-                });
-            };
+            const newNode = new Traveler(nextMove.orientation, neighbor, [...currNode.moves, nextMove.move]);
+            queue.push(newNode);
         };
     };
 
