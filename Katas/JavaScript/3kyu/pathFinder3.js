@@ -4,8 +4,8 @@ You are at start location [0, 0] in mountain area of NxN and you can only move i
 Location altitude is defined as an integer number (0-9).
 */
 
-const getNeighbors = (grid, pos, distances) => {
-    const [row, col] = pos;
+const getNeighbors = (grid, currPos, distances) => {
+    const [row, col] = currPos;
     return [
         [row - 1, col],
         [row + 1, col],
