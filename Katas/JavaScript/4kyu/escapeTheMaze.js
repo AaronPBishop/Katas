@@ -81,42 +81,23 @@ class Traveler {
 const isPossible = (grid) => {
     const escapeCoords = [];
 
-    let validTopRow = false;
-    let validBottomRow = false;
-    let validLeftSide = false;
-    let validRightSide = false;
-
     for (let i = 0; i < grid[0].length; i++) {
         const topRow = grid[0][i];
         const bottomRow = grid[grid.length - 1][i];
 
-        if (topRow === ' ') {
-            validTopRow = true;
-            escapeCoords.push([0, i]);
-        };
-
-        if (bottomRow === ' ') {
-            validBottomRow = true;
-            escapeCoords.push([grid.length - 1, i]);
-        };
+        if (topRow === ' ') escapeCoords.push([0, i]);
+        if (bottomRow === ' ') escapeCoords.push([grid.length - 1, i]);
     };
 
     for (let i = 0; i < grid.length; i++) {
         const leftSide = grid[i][0];
         const rightSide = grid[i][grid[i].length - 1];
 
-        if (leftSide === ' ') {
-            validLeftSide = true;
-            escapeCoords.push([i, 0])
-        };
-
-        if (rightSide === ' ') {
-            validRightSide = true;
-            escapeCoords.push([i, grid[i].length - 1]);
-        };
+        if (leftSide === ' ') escapeCoords.push([i, 0]);
+        if (rightSide === ' ') escapeCoords.push([i, grid[i].length - 1]);
     };
 
-    if (validTopRow || validBottomRow || validLeftSide || validRightSide) return { isValid: true, escapeCoords };
+    if (escapeCoords.length) return { isValid: true, escapeCoords };
     return { isValid: false, escapeCoords };
 };
 
